@@ -3,22 +3,33 @@ name: Run Stock Report
 on:
   workflow_dispatch:
   schedule:
-    - cron: '30 3 * * *' # 9:00 AM IST daily (03:30 UTC)
+    - cron: '30 3 * * *'
 
 jobs:
   stock-report:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     environment: "Stock report run"
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Conda
+      - name: Set up Miniconda
         uses: conda-incubator/setup-miniconda@v3
         with:
           environment-file: environment.yaml
           activate-environment: agent_test
           auto-activate-base: false
+          use-only-tar-bz2: true
+
+      - name: Cache Conda packages
+        uses: actions/cache@v4
+        with:
+          path: ~/conda_pkgs_dir
+          key: conda-${{ runner.os }}-${{ hashFiles('environment.yaml') }}
+          restore-keys: |
+            conda-${{ runner.os }}-
 
       - name: Run stock report
         shell: bash -el {0}

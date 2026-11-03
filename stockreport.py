@@ -16,9 +16,14 @@ from agent import build_agent
 from forwarder import NotionForwarder, TelegramForwarder
 import logging
 from agent_list import run_stock_agent_tool
-from logging_config import configure_logging
 
-configure_logging()
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s | %(levelname)s | %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[logging.StreamHandler()],
+    force=True,
+)
 
 def main() -> None:
     # Load the local configuration before agent.py reads OPEN_ROUTER_API.
