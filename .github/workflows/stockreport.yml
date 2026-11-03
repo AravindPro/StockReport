@@ -8,7 +8,7 @@ on:
 jobs:
   stock-report:
     runs-on: ubuntu-latest
-
+    environment: "Stock report run"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
