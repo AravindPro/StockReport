@@ -1,0 +1,30 @@
+name: Run Stock Report
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 3 * * *' # 9:00 AM IST daily (03:30 UTC)
+
+jobs:
+  stock-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          environment-file: environment.yaml
+          activate-environment: agent_test
+          auto-activate-base: false
+
+      - name: Run stock report
+        shell: bash -el {0}
+        run: python stockreport.py
+        env:
+          OPEN_ROUTER_API: ${{ secrets.OPEN_ROUTER_API }}
+          OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
+          TELEGRAM_STOCK_BOT_API: ${{ secrets.TELEGRAM_STOCK_BOT_API }}
+          TELEGRAM_STOCK_BOT_CHAT_ID: ${{ secrets.TELEGRAM_STOCK_BOT_CHAT_ID }}

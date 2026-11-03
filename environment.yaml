@@ -1,0 +1,17 @@
+name: agent_test
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - tk
+  - pip:
+      - beautifulsoup4
+      - ddgs
+      - langchain
+      - langchain-community
+      - langchain-mcp-adapters
+      - langchain-openai
+      - markdownify
+      - python-dotenv
+      - streamlit

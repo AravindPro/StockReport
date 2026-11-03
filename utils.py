@@ -1,5 +1,8 @@
 """Small shared helpers for the application."""
 
+import asyncio
+import inspect
+import logging
 from functools import wraps
 from time import sleep
 from typing import Callable, ParamSpec, TypeVar
@@ -18,6 +21,23 @@ def retry(max_retries: int = 3, delay_seconds: float = 1.0) -> Callable[[Callabl
         raise ValueError("max_retries must be zero or greater")
 
     def decorator(func: Callable[P, T]) -> Callable[P, T]:
+        if inspect.iscoroutinefunction(func):
+            @wraps(func)
+            async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+                for attempt in range(max_retries + 1):
+                    try:
+                        return await func(*args, **kwargs)
+                    except Exception:
+                        if attempt == max_retries:
+                            logging.error("Async operation failed after %d retries", max_retries)
+                            raise
+                        logging.warning("Async operation failed; retrying (%d/%d)", attempt + 1, max_retries)
+                        await asyncio.sleep(delay_seconds)
+
+                raise RuntimeError("Retry loop ended unexpectedly")  # pragma: no cover
+
+            return async_wrapper  # type: ignore[return-value]
+
         @wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
             for attempt in range(max_retries + 1):
@@ -25,7 +45,9 @@ def retry(max_retries: int = 3, delay_seconds: float = 1.0) -> Callable[[Callabl
                     return func(*args, **kwargs)
                 except Exception:
                     if attempt == max_retries:
+                        logging.error("Operation failed after %d retries", max_retries)
                         raise
+                    logging.warning("Operation failed; retrying (%d/%d)", attempt + 1, max_retries)
                     sleep(delay_seconds)
 
             raise RuntimeError("Retry loop ended unexpectedly")  # pragma: no cover
