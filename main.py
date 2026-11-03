@@ -1,9 +1,15 @@
 """Launch the Streamlit UI for the OpenRouter agent."""
 
+import logging
 import os
 import subprocess
 import sys
 from pathlib import Path
+
+from logging_config import configure_logging
+
+
+configure_logging()
 
 
 def load_env_file() -> None:
@@ -24,6 +30,7 @@ def main() -> int:
     """Run the web UI, which uses agent.build_agent as its backend."""
     load_env_file()
     app_path = Path(__file__).with_name("webapp_streamlit.py")
+    logging.info("Starting Streamlit web application")
     return subprocess.call([sys.executable, "-m", "streamlit", "run", str(app_path)])
 
 

@@ -5,6 +5,9 @@ from tkinter import ttk
 import argparse
 from agent import build_agent
 import tkinter as tk
+from logging_config import configure_logging
+
+configure_logging()
 
 class Collapsible(ttk.Frame):
     def __init__(self, master, title="Tool Calls"):
