@@ -17,7 +17,7 @@ class RetryModelCalls(AgentMiddleware):
     """Retry failed model calls without rerunning tools or the full agent."""
 
     def wrap_model_call(self, request, handler):
-        @retry(max_retries=3, delay_seconds=1.0)
+        @retry(max_retries=5, delay_seconds=30.0)
         def call_model():
             return handler(request)
 

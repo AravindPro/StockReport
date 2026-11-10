@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 import logging
 from agent import build_agent
-from custom_tools import fetch_yahoo_finance_news
+from custom_tools import fetch_yahoo_finance_news, get_stock_ticker
 from logging_config import configure_logging
 
 configure_logging()
@@ -27,7 +27,7 @@ def run_stock_agent_tool(description: str):
     logging.info("Creating ticker-summary agent with Yahoo Finance news tool")
     agent = build_agent(
         filename="tickersummary.md",
-        extra_tools=[fetch_yahoo_finance_news],
+        extra_tools=[fetch_yahoo_finance_news, get_stock_ticker],
     )
     prompt = (
         f"Generate today's ticker summaries. {description}. "
