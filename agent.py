@@ -58,8 +58,8 @@ def build_agent(model=None, filename: str = "system.md", extra_tools: list | Non
         model=model,
     )
 
-    search = DuckDuckGoSearchResults(output_format="list")
-    tools = [search, fetch_webpage, *(extra_tools or [])]
+    # search = DuckDuckGoSearchResults(output_format="list")
+    tools = [fetch_webpage, *(extra_tools or [])]
     # mcp_tools = asyncio.run(get_groww_mcp_tools())
     # tools.extend(mcp_tools)
     middlewares = [RetryModelCalls()]
