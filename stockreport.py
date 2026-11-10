@@ -25,35 +25,36 @@ logging.basicConfig(
     force=True,
 )
 
+DEFAULT_TICKERS = [
+    "ATHERENERG.NS",
+    "ETERNAL.NS",
+    "TSLA",
+    "NVDA",
+    "CRWD",
+    "ARM",
+    "XRP-USD",
+    "ETH-USD",
+    "AMD",
+    "CRWV",
+    "AMZN",
+    "AAPL",
+    "GOOG",
+    "META",
+    "INTC",
+    "EWZ", 
+]
 def main() -> None:
     # Load the local configuration before agent.py reads OPEN_ROUTER_API.
     load_dotenv(Path(__file__).with_name(".env"))
     logging.info("Starting stock report")
-    tickers = [
-        "ATHERENERG.NS",
-        "ETERNAL.NS",
-        "TSLA",
-        "NVDA",
-        "CRWD",
-        "ARM",
-        "XRP-USD",
-        "ETH-USD",
-        "AMD",
-        "CRWV",
-        "AMZN",
-        "AAPL",
-        "GOOG",
-        "META",
-        "INTC",
-        "EWZ",
-        
-    ]
-    report = run_stock_agent_tool(tickers)
+    forwarder = TelegramForwarder.from_environment()
+    description = forwarder.get_chat_description() or ",".join(DEFAULT_TICKERS)
+    report = run_stock_agent_tool(description)
     logging.debug(f"Report: {report}")
     logging.info("Generated stock report (%d characters)", len(report))
 
     title = f"Stock report — {datetime.now().strftime('%Y-%m-%d')}"
-    TelegramForwarder.from_environment().forward(report, subject=title)
+    forwarder.forward(report, subject=title)
     logging.info("Report forwarded successfully.")
 
 

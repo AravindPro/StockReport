@@ -122,6 +122,44 @@ class TelegramForwarder:
             chat_id=env["TELEGRAM_STOCK_BOT_CHAT_ID"],
         )
 
+    def get_chat_description(self):
+        """Retrieves the description of a Telegram chat or channel.
+
+        Args:
+            token (str): Telegram Bot API token.
+            chat_id (str | int): Unique identifier of the chat or channel.
+
+        Returns:
+            Optional[str]: Chat description if available, otherwise a message indicating
+                that no description is set. Returns None if the
+                API request fails.
+        """
+        url = f"https://api.telegram.org/bot{self.bot_token}/getChat"
+
+        payload = json.dumps({"chat_id": self.chat_id}).encode("utf-8")
+
+        req = urllib.request.Request(
+            url,
+            data=payload,
+            headers={"Content-Type": "application/json"},
+            method="POST"
+        )
+
+        try:
+            with urllib.request.urlopen(req, timeout=10) as response:
+                data = json.loads(response.read().decode("utf-8"))
+
+            if data.get("ok"):
+                chat_info = data.get("result", {})
+                description = chat_info.get("description")
+
+                return description
+
+            return None
+
+        except Exception as e:
+            return None
+
     def forward(self, text: str, *, subject: str | None = None) -> None:
         """Send a report as plain text to Telegram."""
         if not text.strip():

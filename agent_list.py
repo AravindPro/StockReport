@@ -23,46 +23,18 @@ def generate_report() -> str:
     response = agent.invoke({"messages": [("user", prompt)]})
     return extract_final_text(response)
 
-def run_stock_agent(tickers: list = None):
-    logging.info("Creating agent")
-    agent = build_agent(filename="tickersummary.md")
-    logging.info("Agent created")
-    if tickers is None:
-        tickers = ['BTC-USD', 'GOOG', 'AAPL']
-    logging.info("Running for tickers %s", tickers)
-    news_contexts = [
-        fetch_yahoo_finance_news.invoke({"ticker": ticker})
-        for ticker in tickers
-    ]
-    logging.info("Fetched Yahoo Finance context for %d tickers", len(tickers))
-
-    news_context = "\n".join(news_contexts)
-    prompt = f"""Generate today's ticker summaries.
-
-    ## Yahoo Finance News Context for {", ".join(tickers)}
-
-    Use the following fetched news and press releases as source material.
-    Cite the provided article links wherever relevant.
-
-    {news_context}"""
-    response = agent.invoke({"messages": [("user", prompt)]})
-    return extract_final_text(response)
-
-def run_stock_agent_tool(tickers: list = None):
-    if tickers is None:
-        tickers = ['BTC-USD', 'GOOG', 'AAPL']
-    ticker_list = [ticker.strip().upper() for ticker in tickers]
+def run_stock_agent_tool(description: str):
     logging.info("Creating ticker-summary agent with Yahoo Finance news tool")
     agent = build_agent(
         filename="tickersummary.md",
         extra_tools=[fetch_yahoo_finance_news],
     )
     prompt = (
-        f"Generate today's ticker summaries for: {', '.join(ticker_list)}. "
+        f"Generate today's ticker summaries. {description}. "
         "Use the Yahoo Finance news tool to fetch context for every ticker, "
         "then summarize the key developments and cite source links."
     )
-    logging.info("Starting ticker-summary agent for %s", ticker_list)
+    logging.info("Starting ticker-summary agent for %s", description)
     logging.debug("Ticker-summary prompt: %s", prompt)
 
     messages = []

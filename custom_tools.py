@@ -2,7 +2,7 @@ from functools import lru_cache
 from typing import Optional, Literal
 from urllib.parse import urljoin
 from urllib.request import Request, urlopen
-
+import yfinance as yf
 from bs4 import BeautifulSoup
 from markdownify import markdownify as md
 
@@ -168,6 +168,35 @@ def fetch_yahoo_finance_news(ticker: str) -> str:
 
     except Exception as exc:
         return f"Error fetching Yahoo Finance news for {ticker}: {exc}"
+
+@tool
+def get_stock_ticker(company_name: str) -> str:
+    """Find the Yahoo Finance ticker symbol for a company.
+
+    Args:
+        company_name (str): Short or commonly used company name, such as
+            "Apple", "Microsoft", or "Reliance".
+
+    Returns:
+        str: The ticker symbol of the first Yahoo Finance search result.
+    """
+    try:
+        results = yf.Search(company_name.strip(), max_results=1)
+
+        if not results.quotes:
+            return f"No ticker found for {company_name}."
+
+        quote = results.quotes[0]
+        ticker = quote.get("symbol")
+
+        if not ticker:
+            return f"No ticker found for {company_name}."
+
+        return ticker
+
+    except Exception as exc:
+        logging.warning("Ticker lookup failed for %s: %s", company_name, exc)
+        return f"Error fetching ticker for {company_name}: {exc}"
 
 async def get_groww_mcp_tools() -> list[BaseTool]:
     """Connect to Groww's remote MCP server and load its LangChain tools.

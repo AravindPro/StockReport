@@ -15,3 +15,4 @@ dependencies:
       - markdownify
       - python-dotenv
       - streamlit
+      - yfinance
