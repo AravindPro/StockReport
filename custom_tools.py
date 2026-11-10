@@ -181,7 +181,7 @@ def get_stock_ticker(company_name: str) -> str:
         str: The ticker symbol of the first Yahoo Finance search result.
     """
     try:
-        results = yf.Search(company_name.strip(), max_results=1)
+        results = yf.Search(company_name.strip())
 
         if not results.quotes:
             return f"No ticker found for {company_name}."
