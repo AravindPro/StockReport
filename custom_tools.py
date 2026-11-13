@@ -147,8 +147,8 @@ def fetch_yahoo_finance_news(ticker: str) -> str:
 
     output = []
 
-    try:
-        for section, url in urls.items():
+    for section, url in urls.items():
+        try:
             html = _fetch_page_html(url)
 
             soup = BeautifulSoup(html, "html.parser")
@@ -164,10 +164,13 @@ def fetch_yahoo_finance_news(ticker: str) -> str:
 
             output.append(f"# {section}\n\n{markdown}")
 
-        return f"## Ticker {ticker}\n\n---\n\n".join(output)
+        except Exception as exc:
+            pass
 
-    except Exception as exc:
+    if not output:
         return f"Error fetching Yahoo Finance news for {ticker}: {exc}"
+    else:
+        return f"## Ticker {ticker}\n\n---\n\n".join(output)
 
 @tool
 def get_stock_ticker(company_name: str) -> str:
