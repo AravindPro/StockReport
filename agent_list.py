@@ -27,7 +27,7 @@ def run_stock_agent_tool(description: str):
     logging.info("Creating ticker-summary agent with Yahoo Finance news tool")
     agent = build_agent(
         filename="tickersummary.md",
-        extra_tools=[fetch_yahoo_finance_news, get_stock_ticker],
+        extra_tools=[fetch_yahoo_finance_news],
     )
     prompt = (
         f"Generate today's ticker summaries. {description}. "
