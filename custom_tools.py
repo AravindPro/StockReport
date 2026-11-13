@@ -138,7 +138,7 @@ def fetch_yahoo_finance_news(ticker: str) -> str:
 
     urls = {
         "Latest News": (
-            f"https://finance.yahoo.com/quote/{ticker}/latest-news/"
+            f"https://finance.yahoo.com/quote/{ticker}/news/"
         ),
         "Press Releases": (
             f"https://finance.yahoo.com/quote/{ticker}/press-releases/"
