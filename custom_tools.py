@@ -235,3 +235,10 @@ async def get_groww_mcp_tools() -> list[BaseTool]:
         logging.debug("Groww MCP tool available: %s", tool.name)
 
     return tools
+
+
+CUSTOM_TOOLS = {
+    "fetch_webpage": fetch_webpage,
+    "fetch_yahoo_finance_news": fetch_yahoo_finance_news,
+    "get_stock_ticker": get_stock_ticker,
+}

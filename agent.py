@@ -33,8 +33,10 @@ class RetryModelCalls(AgentMiddleware):
 
 def load_system_prompt(filename: str) -> str:
     """Read the editable system prompt stored beside this module."""
-    prompt_path = Path(__file__).parent / f"system_prompts/{filename}"
-    if not prompt_path.exists():
+    prompt_path = Path(filename)
+    if not prompt_path.is_absolute() and not prompt_path.is_file():
+        prompt_path = Path(__file__).parent / "system_prompts" / prompt_path
+    if not prompt_path.is_file():
         logging.warning("System prompt file was not found; using the default prompt")
         return "You are a helpful assistant."
     logging.info("Loaded system prompt")
@@ -59,7 +61,10 @@ def build_agent(model=None, filename: str = "system.md", extra_tools: list | Non
     )
 
     # search = DuckDuckGoSearchResults(output_format="list")
-    tools = [fetch_webpage, *(extra_tools or [])]
+    tools = []
+    for tool in [fetch_webpage, *(extra_tools or [])]:
+        if all(existing.name != tool.name for existing in tools):
+            tools.append(tool)
     # mcp_tools = asyncio.run(get_groww_mcp_tools())
     # tools.extend(mcp_tools)
     middlewares = [RetryModelCalls()]

@@ -13,6 +13,7 @@ dependencies:
       - langchain-mcp-adapters
       - langchain-openai
       - markdownify
+      - pyyaml
       - python-dotenv
       - streamlit
       - yfinance

@@ -5,7 +5,7 @@ import os
 import streamlit as st
 
 from agent import build_agent
-from logging_config import configure_logging
+from app_logging import configure_logging
 
 
 configure_logging()

@@ -145,22 +145,18 @@ class TelegramForwarder:
             method="POST"
         )
 
-        try:
-            with urllib.request.urlopen(req, timeout=10) as response:
-                data = json.loads(response.read().decode("utf-8"))
+        with urllib.request.urlopen(req, timeout=10) as response:
+            data = json.loads(response.read().decode("utf-8"))
 
-            if data.get("ok"):
-                chat_info = data.get("result", {})
-                description = chat_info.get("description")
+        if not data.get("ok"):
+            raise RuntimeError(
+                f"Telegram getChat request failed: {data.get('description', 'unknown error')}"
+            )
 
-                return description
+        chat_info = data.get("result", {})
+        return chat_info.get("description")
 
-            return None
-
-        except Exception as e:
-            return None
-
-    def forward(self, text: str, *, subject: str | None = None) -> None:
+    def forward(self, text: str, subject: str, *args: object, **kwargs: object) -> None:
         """Send a report as plain text to Telegram."""
         if not text.strip():
             raise ValueError("Refusing to forward an empty report.")
@@ -243,11 +239,7 @@ class NotionForwarder:
             parent_page_id=env["NOTION_STOCK_REPORTS_PAGE_ID"],
         )
 
-    def forward(
-        self,
-        text: str,
-        title: str
-    ) -> str:
+    def forward(self, text: str, title: str, *args: object, **kwargs: object) -> str:
         """Create a new Notion page containing the Markdown report."""
 
         if not text.strip():
@@ -325,3 +317,21 @@ class NotionForwarder:
             )
 
         return page_url
+
+
+@dataclass(frozen=True)
+class ConsoleForwarder:
+    """Write agent output to the console."""
+
+    def forward(self, text: str, *args: object, **kwargs: object) -> None:
+        """Print the agent output."""
+        if not text.strip():
+            raise ValueError("Refusing to forward empty output.")
+        print(text)
+
+
+FORWARDERS = {
+    "console": ConsoleForwarder,
+    "telegram": TelegramForwarder.from_environment,
+    "notion": NotionForwarder.from_environment,
+}

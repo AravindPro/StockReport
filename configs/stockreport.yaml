@@ -1,0 +1,12 @@
+system_prompt: ../system_prompts/tickersummary.md
+
+# Tool names must match entries in CUSTOM_TOOLS in custom_tools.py.
+tools:
+  - fetch_yahoo_finance_news
+  - get_stock_ticker
+
+# Credentials are read from the environment, not stored in this file.
+forwarder:
+  type: telegram
+  subject: Stock Report
+  include_chat_description_in_prompt: true
